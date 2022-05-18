@@ -1,6 +1,6 @@
 /********************************************************************************/
 /*   Author  : Ahmed Farag                                                      */
-/*   Date    : 13/05/2022                                                       */
+/*   Date    : 18/05/2022                                                       */
 /*   Version : V01                                                              */
 /********************************************************************************/
 
@@ -10,6 +10,13 @@
 
 // Inputs pins 
 #define POTENTIOMETER_PIN_NUMBER 22
+
+//Remote control parameters  
+  
+#define CHANNEL_NUMBER          2
+#define UPPER_LIMIT             1722
+#define DEFAULT_LIMIT           1002
+#define LOWER_LIMIT             283
 
 
 // Transistors Pin number 
@@ -52,8 +59,7 @@ void Curtis_Forward (int Throttle_Pin , int Potentiometer_Readings , int Throttl
 void Curtis_Reverse(int Throttle_Pin , int Potentiometer_Readings , int Throttle_Min_Readings, int Throttle_Max_Readings, int Throttle_Min_PWM ,int Throttle_Max_PWM, int Reverse_Switch_Pin);
 void Curtis_Break(int Break_Pin , int State);
 int  Curtis_Speedometer(int Sedometer_Pin , int Mode);
-
-
+void Curtis_RC(int Channel_Number);
 
 
 #endif
