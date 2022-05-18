@@ -1,26 +1,32 @@
 /********************************************************************************/
 /*   Author  : Ahmed Farag                                                      */
-/*   Date    : 22/04/2022                                                       */
+/*   Date    : 18/05/2022                                                       */
 /*   Version : V01                                                              */
 /********************************************************************************/
 
 // Includes
+#include "SBUS.h"
 #include <Arduino.h>
 #include <Curtis_Configuration.h>
 
 int Potentiometer_Readings = 0;
 
+
 void setup()
 {
 
+  // initialization function
   Curtis_Init();
 
+  // begin the serial communication
   Serial.begin(9600);
 }
 
 char c;
 void loop()
 {
+
+  Curtis_RC(CHANNEL_NUMBER);
 
   if (Serial.available())
   {

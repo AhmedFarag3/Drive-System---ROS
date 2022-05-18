@@ -1,10 +1,20 @@
 /********************************************************************************/
 /*   Author  : Ahmed Farag                                                      */
-/*   Date    : 22/04/2022                                                       */
+/*   Date    : 18/05/2022                                                       */
 /*   Version : V01                                                              */
 /********************************************************************************/
 #include <Arduino.h>
 #include <Curtis_Configuration.h>
+#include "SBUS.h"
+
+// channel, fail safe, and lost frames data
+uint16_t channels[16];
+bool failSafe;
+bool lostFrame;
+
+// a SBUS object, which is on hardware
+// serial port 1
+SBUS x8r(Serial1);
 
 //Intitialization function 
 void Curtis_Init()
@@ -21,8 +31,10 @@ void Curtis_Init()
       digitalWrite(REVERSE_DIRECTION_SWITCH,LOW);
     // Set the spedometer pin to input
     //pinMode(SPEDOMETER_PIN, INPUT);
-    
-      
+
+    // begin the SBUS communication
+    x8r.begin();
+
 }
 
 // Function to get the Potentiomete readings
@@ -78,3 +90,12 @@ void Curtis_Break(int Break_Pin , int State)
 //   }
    
 // }
+
+void Curtis_RC(int Channel_Number)
+{
+ if (x8r.read(&channels[0], &failSafe, &lostFrame)) {
+
+    Serial.print("Channel 2: ");
+    Serial.println(channels[Channel_Number]);}
+
+}
