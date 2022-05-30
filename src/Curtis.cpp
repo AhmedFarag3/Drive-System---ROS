@@ -1,26 +1,23 @@
 /********************************************************************************/
-/*   Author  : Ahmed Farag                                                      */
+/*   Author  : Ahmed Farag  & Wajih                                             */
 /*   Date    : 18/05/2022                                                       */
-/*   Version : V01                                                              */
+/*   Version : V02                                                              */
 /********************************************************************************/
 #include <Arduino.h>
 #include <Curtis_Configuration.h>
 #include "SBUS.h"
-
-// channel, fail safe, and lost frames data
-uint16_t channels[16];
-bool failSafe;
-bool lostFrame;
-
-// a SBUS object, which is on hardware
-// serial port 1
-SBUS x8r(Serial1);
 
 //Intitialization function 
 void Curtis_Init()
 {
     // Set the PWM pin for the throttle to output
       pinMode(THROTTLE_FORWARD_PIN, OUTPUT);
+    // Set the Forward switch pin  to output
+      pinMode(FORWARD_DIRECTION_SWITCH, OUTPUT);
+    // Set the Reverse switch pin  to output
+      pinMode(REVERSE_DIRECTION_SWITCH, OUTPUT);
+    // Set the Key switch pin  to output
+      pinMode(KEY_SWITCH_PIN, OUTPUT);
     // Set the reverse pin switch to output 
       pinMode(REVERSE_DIRECTION_SWITCH, OUTPUT);
     // Set the High break pin switch to output 
@@ -31,11 +28,8 @@ void Curtis_Init()
       digitalWrite(REVERSE_DIRECTION_SWITCH,LOW);
     // Set the spedometer pin to input
     //pinMode(SPEDOMETER_PIN, INPUT);
-
-    // begin the SBUS communication
-    x8r.begin();
-
 }
+
 
 // Function to get the Potentiomete readings
 int  Get_Potentiometer_Readings (int Potentiometer_Pin_Num)
@@ -53,6 +47,7 @@ void Curtis_Forward (int Potentiometer_Readings  , int Throttle_Pin  , int Throt
     Serial.println(Throttle_PWM_Value);
 
     digitalWrite(REVERSE_DIRECTION_SWITCH,LOW);
+    digitalWrite(FORWARD_DIRECTION_SWITCH,HIGH);
     analogWrite(Throttle_Pin, Throttle_PWM_Value);
 
 }
@@ -65,7 +60,8 @@ void Curtis_Reverse(int Potentiometer_Readings ,int Throttle_Pin , int Throttle_
     int Throttle_PWM_Value_Rev = map(Potentiometer_Readings,Throttle_Min_Readings,Throttle_Max_Readings,Throttle_Min_PWM,Throttle_Max_PWM);
     Serial.print("Reverse PWM ");
     Serial.println(Throttle_PWM_Value_Rev);
-    
+
+    digitalWrite(FORWARD_DIRECTION_SWITCH,LOW);
     digitalWrite(Reverse_Switch_Pin,HIGH);
     analogWrite(Throttle_Pin, Throttle_PWM_Value_Rev);
 }
@@ -74,6 +70,54 @@ void Curtis_Reverse(int Potentiometer_Readings ,int Throttle_Pin , int Throttle_
 void Curtis_Break(int Break_Pin , int State)
 {
     digitalWrite(Break_Pin,State);
+}
+
+// Function to activate and disable the key 
+void Curtis_Key_Switch (int Key_Pin , int Key_State)
+{
+    digitalWrite(Key_Pin,Key_State);
+}
+
+// Function for the RC control for the driver
+void Curtis_RC (int RC_Readings, int RC_Switch, int RC_Key_Switch_Reading)
+{
+  int RC_Key_Switch = 0;
+
+
+    if (RC_Key_Switch_Reading == 278)
+  {
+    RC_Key_Switch = LOW;
+  }
+  else if (RC_Key_Switch_Reading == 1715)
+  {
+    RC_Key_Switch = HIGH;
+  }
+
+  Curtis_Key_Switch(KEY_SWITCH_PIN, RC_Key_Switch);
+
+  if (RC_Switch == 278)
+  {
+    if ((RC_Readings >= 1004) && (RC_Readings <= 1722))
+    {
+      Serial.print("Forward: ");
+      Curtis_Forward(RC_Readings, THROTTLE_FORWARD_PIN, THROTTLE_MIN_READINGS, THROTTLE_MAX_READINGS, THROTTLE_MIN_PWM, THROTTLE_MAX_PWM);
+    }
+
+    if ((RC_Readings > 1000) && (RC_Readings < 1004))
+    {
+
+      analogWrite(THROTTLE_FORWARD_PIN, 0);
+      digitalWrite(REVERSE_DIRECTION_SWITCH, LOW);
+      digitalWrite(FORWARD_DIRECTION_SWITCH, LOW);
+    }
+
+    if ((RC_Readings >= 283) && (RC_Readings <= 1000))
+    {
+
+      Serial.print("Reverse: ");
+      Curtis_Reverse(RC_Readings, THROTTLE_REVERSE_PIN, THROTTLE_MIN_READINGS_REVERSE, THROTTLE_MAX_READINGS_REVERSE, THROTTLE_MIN_PWM_REVERSE, THROTTLE_MAX_PWM_REVERSE, REVERSE_DIRECTION_SWITCH);
+    }
+  }
 }
 
 // Function for speedo meter for feedback
@@ -91,11 +135,3 @@ void Curtis_Break(int Break_Pin , int State)
    
 // }
 
-void Curtis_RC(int Channel_Number)
-{
- if (x8r.read(&channels[0], &failSafe, &lostFrame)) {
-
-    Serial.print("Channel 2: ");
-    Serial.println(channels[Channel_Number]);}
-
-}

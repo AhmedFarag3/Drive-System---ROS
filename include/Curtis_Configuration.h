@@ -1,7 +1,7 @@
 /********************************************************************************/
-/*   Author  : Ahmed Farag                                                      */
+/*   Author  : Ahmed Farag  & Wajih                                             */
 /*   Date    : 18/05/2022                                                       */
-/*   Version : V01                                                              */
+/*   Version : V02                                                              */
 /********************************************************************************/
 
 #ifndef CURTIS_CONFIGURATION_H
@@ -13,10 +13,18 @@
 
 //Remote control parameters  
   
-#define CHANNEL_NUMBER          2
-#define UPPER_LIMIT             1722
-#define DEFAULT_LIMIT           1002
-#define LOWER_LIMIT             283
+#define RC_FW_CH_NUM                 2
+#define RC_RV_CH_NUM                 2
+#define RC_ON_OFF_SW_CH_NUM          7
+#define RC_KEY_SW_CH_NUM             8
+
+#define RC_FW_UPPER_LIMIT               1722
+#define RC_DEFAULT_LIMIT                1002
+#define RC_RV_LOWER_LIMIT               283
+
+#define RC_SWITCH_UP                  278
+#define RC_SWITCH_DOWN                1715
+
 
 
 // Transistors Pin number 
@@ -24,21 +32,22 @@
 
 // Forward motor driver parameters
 
-#define THROTTLE_FORWARD_PIN   2
-#define THROTTLE_MIN_PWM       0
-#define THROTTLE_MAX_PWM       200
-#define THROTTLE_MIN_READINGS  0
-#define THROTTLE_MAX_READINGS  900
+#define THROTTLE_FORWARD_PIN        36
+#define FORWARD_DIRECTION_SWITCH    10
+#define THROTTLE_MIN_PWM            0
+#define THROTTLE_MAX_PWM            150
+#define THROTTLE_MIN_READINGS       1004
+#define THROTTLE_MAX_READINGS       1722
 
 
 // REVERSE motor driver parameters
 
-#define THROTTLE_REVERSE_PIN             2
-#define REVERSE_DIRECTION_SWITCH         16 
-#define THROTTLE_MIN_PWM_REVERSE        -200
-#define THROTTLE_MAX_PWM_REVERSE         0
-#define THROTTLE_MIN_READINGS_REVERSE   -600
-#define THROTTLE_MAX_READINGS_REVERSE    0
+#define THROTTLE_REVERSE_PIN            36
+#define REVERSE_DIRECTION_SWITCH        11 
+#define THROTTLE_MIN_PWM_REVERSE        0
+#define THROTTLE_MAX_PWM_REVERSE        150
+#define THROTTLE_MIN_READINGS_REVERSE   1000
+#define THROTTLE_MAX_READINGS_REVERSE   283
 
 // HIGH Break PINS
 #define HIGH_BREAK_PIN           37
@@ -49,6 +58,11 @@
 #define SPEDOMETER_PIN                 
 #define SPEDOMETER_PULSE_MODE_HIGH    HIGH 
 
+// Key switch pin
+#define KEY_SWITCH_PIN  12
+
+// Stering channel
+#define STEERING_CH     0
 
 
 // Functions Prototype
@@ -59,7 +73,9 @@ void Curtis_Forward (int Throttle_Pin , int Potentiometer_Readings , int Throttl
 void Curtis_Reverse(int Throttle_Pin , int Potentiometer_Readings , int Throttle_Min_Readings, int Throttle_Max_Readings, int Throttle_Min_PWM ,int Throttle_Max_PWM, int Reverse_Switch_Pin);
 void Curtis_Break(int Break_Pin , int State);
 int  Curtis_Speedometer(int Sedometer_Pin , int Mode);
-void Curtis_RC(int Channel_Number);
+void Curtis_Key_Switch (int Key_Pin , int Key_State);
+void Curtis_RC (int RC_Readings, int RC_Switch, int RC_Key_Switch_Reading);
+
 
 
 #endif

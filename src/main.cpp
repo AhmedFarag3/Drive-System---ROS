@@ -1,63 +1,57 @@
 /********************************************************************************/
-/*   Author  : Ahmed Farag                                                      */
+/*   Author  : Ahmed Farag  & Wajih                                             */
 /*   Date    : 18/05/2022                                                       */
-/*   Version : V01                                                              */
+/*   Version : V02                                                              */
 /********************************************************************************/
 
 // Includes
 #include "SBUS.h"
 #include <Arduino.h>
+#include <T_Motor.h>
 #include <Curtis_Configuration.h>
+#include <Brake.h>
 
+uint16_t channels[16];
 int Potentiometer_Readings = 0;
+bool failSafe;
+bool lostFrame;
+char c;
+int RC_Readings;
+int RC_Switch;
+int RC_Key_Switch_Reading;
+int RC_Steering_Val;
 
+// a SBUS object, which is on hardware
+// serial port 1
+SBUS x8r(Serial1);
 
 void setup()
 {
-
-  // initialization function
+  // initialization functions
+  Steering_Init();
   Curtis_Init();
+  Brake_init();
+
+  // begin the SBUS communication
+  x8r.begin();
 
   // begin the serial communication
   Serial.begin(9600);
 }
 
-char c;
 void loop()
 {
+  if (x8r.read(&channels[0], &failSafe, &lostFrame))
+    ;
 
-  Curtis_RC(CHANNEL_NUMBER);
+  RC_Readings = channels[RC_FW_CH_NUM];
+  RC_Switch = channels[RC_ON_OFF_SW_CH_NUM];
+  RC_Key_Switch_Reading = channels[RC_KEY_SW_CH_NUM];
+  RC_Steering_Val = channels[STEERING_CH];
 
-  if (Serial.available())
-  {
-    c = Serial.read();
-    Serial.println(c);
-  }
-  if (c == 'F')
-  {
+  Can3.events();
+  Brake_Control(RC_Readings);
 
-    Potentiometer_Readings = Get_Potentiometer_Readings(POTENTIOMETER_PIN_NUMBER);
-    Serial.print("Forward: ");
-    
-
-   Curtis_Break(HIGH_BREAK_PIN,HIGH_BREAK_OFF_STATE);
-   Curtis_Forward(Potentiometer_Readings, THROTTLE_FORWARD_PIN, THROTTLE_MIN_READINGS, THROTTLE_MAX_READINGS, THROTTLE_MIN_PWM, THROTTLE_MAX_PWM);
-  }
-  if (c == 'R')
-  {
-    Potentiometer_Readings = Get_Potentiometer_Readings(POTENTIOMETER_PIN_NUMBER);
-    Serial.print("Reverse: ");
-    
-
-    Curtis_Break(HIGH_BREAK_PIN, HIGH_BREAK_OFF_STATE);
-    // In this function call we will pass the arguments of the function as same as the forward since we are not using slider throttle with negative values
-    Curtis_Reverse(Potentiometer_Readings, THROTTLE_FORWARD_PIN, THROTTLE_MIN_READINGS, THROTTLE_MAX_READINGS, THROTTLE_MIN_PWM, THROTTLE_MAX_PWM, REVERSE_DIRECTION_SWITCH);
-  }
-  if (c == 'B')
-  {
-    Serial.println("Break");
-
-    Curtis_Break(HIGH_BREAK_PIN, HIGH_BREAK_ON_STATE);
-  }
+  RC_Control_Steps(RC_Steering_Val);
+  Curtis_RC(RC_Readings, RC_Switch, RC_Key_Switch_Reading);
 }
-
