@@ -136,15 +136,19 @@ void Steer_Position_Steps(float &Position, int Step_goal)
 void RC_Control_Steps(int RC_Val)
 {
 
+    // int SteeringRC = map(RC_Val, RC_Steer_Zero, RC_Steer_Max, P_SteeringZero, P_SteeringMin);
+    int SteeringRC = map(RC_Val, RC_Steer_Zero, RC_Steer_Max, P_SteeringZero, P_SteeringMax);
+
     if (RC_Val > (RC_Steer_Zero + 2))
     {
-        int SteeringRC = map(RC_Val, RC_Steer_Min, RC_Steer_Zero, P_SteeringMin, P_SteeringZero);
         Steer_Position_Steps(P_Steering, SteeringRC);
     }
 
     else if (RC_Val < (RC_Steer_Zero - 2))
     {
-        int SteeringRC = map(RC_Val, RC_Steer_Zero, RC_Steer_Max, P_SteeringZero, P_SteeringMax);
+        // int SteeringRC = map(RC_Val, RC_Steer_Min, RC_Steer_Zero,P_SteeringMax , P_SteeringZero);
+        int SteeringRC = map(RC_Val, RC_Steer_Min, RC_Steer_Zero,P_SteeringMin , P_SteeringZero);
+
         Steer_Position_Steps(P_Steering, SteeringRC);
     }
     else if (RC_Val == RC_Steer_Zero)

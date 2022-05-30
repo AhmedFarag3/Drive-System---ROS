@@ -63,7 +63,7 @@ void Curtis_Reverse(int Potentiometer_Readings ,int Throttle_Pin , int Throttle_
 
     digitalWrite(FORWARD_DIRECTION_SWITCH,LOW);
     digitalWrite(Reverse_Switch_Pin,HIGH);
-    analogWrite(Throttle_Pin, Throttle_PWM_Value_Rev);
+    analogWrite(Throttle_Pin, abs(Throttle_PWM_Value_Rev));
 }
 
 // Function to activate the high break 
@@ -79,31 +79,16 @@ void Curtis_Key_Switch (int Key_Pin , int Key_State)
 }
 
 // Function for the RC control for the driver
-void Curtis_RC (int RC_Readings, int RC_Switch, int RC_Key_Switch_Reading)
+void Curtis_Ros (int Throttle_Readings)
 {
-  int RC_Key_Switch = 0;
-
-
-    if (RC_Key_Switch_Reading == 278)
-  {
-    RC_Key_Switch = LOW;
-  }
-  else if (RC_Key_Switch_Reading == 1715)
-  {
-    RC_Key_Switch = HIGH;
-  }
-
-  Curtis_Key_Switch(KEY_SWITCH_PIN, RC_Key_Switch);
-
-  if (RC_Switch == 278)
-  {
-    if ((RC_Readings >= 1004) && (RC_Readings <= 1722))
+  
+    if (Throttle_Readings > 0)
     {
       Serial.print("Forward: ");
-      Curtis_Forward(RC_Readings, THROTTLE_FORWARD_PIN, THROTTLE_MIN_READINGS, THROTTLE_MAX_READINGS, THROTTLE_MIN_PWM, THROTTLE_MAX_PWM);
+      Curtis_Forward(Throttle_Readings, THROTTLE_FORWARD_PIN, THROTTLE_MIN_READINGS, THROTTLE_MAX_READINGS, THROTTLE_MIN_PWM, THROTTLE_MAX_PWM);
     }
 
-    if ((RC_Readings > 1000) && (RC_Readings < 1004))
+    if (Throttle_Readings == 0)
     {
 
       analogWrite(THROTTLE_FORWARD_PIN, 0);
@@ -111,14 +96,16 @@ void Curtis_RC (int RC_Readings, int RC_Switch, int RC_Key_Switch_Reading)
       digitalWrite(FORWARD_DIRECTION_SWITCH, LOW);
     }
 
-    if ((RC_Readings >= 283) && (RC_Readings <= 1000))
+    if (Throttle_Readings < 0)
     {
 
       Serial.print("Reverse: ");
-      Curtis_Reverse(RC_Readings, THROTTLE_REVERSE_PIN, THROTTLE_MIN_READINGS_REVERSE, THROTTLE_MAX_READINGS_REVERSE, THROTTLE_MIN_PWM_REVERSE, THROTTLE_MAX_PWM_REVERSE, REVERSE_DIRECTION_SWITCH);
+      Curtis_Reverse(Throttle_Readings, THROTTLE_REVERSE_PIN, THROTTLE_MIN_READINGS_REVERSE, THROTTLE_MAX_READINGS_REVERSE, THROTTLE_MIN_PWM_REVERSE, THROTTLE_MAX_PWM_REVERSE, REVERSE_DIRECTION_SWITCH);
     }
   }
-}
+
+
+
 
 // Function for speedo meter for feedback
 // int  Votol_Speedometer(int Sedometer_Pin , int Mode)

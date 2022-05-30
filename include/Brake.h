@@ -13,6 +13,7 @@
 #define Throttle_Max    1722
 #define Throttle_Min    283
 
+#define RC_E_
 void Brake_init();
 void Brake_Control(int Throttle_Value);
 void Brake_Control_Serial();

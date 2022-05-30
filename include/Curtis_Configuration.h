@@ -32,22 +32,22 @@
 
 // Forward motor driver parameters
 
-#define THROTTLE_FORWARD_PIN        36
+#define THROTTLE_FORWARD_PIN        13
 #define FORWARD_DIRECTION_SWITCH    10
 #define THROTTLE_MIN_PWM            0
 #define THROTTLE_MAX_PWM            150
-#define THROTTLE_MIN_READINGS       1004
-#define THROTTLE_MAX_READINGS       1722
+#define THROTTLE_MIN_READINGS       0
+#define THROTTLE_MAX_READINGS       100
 
 
 // REVERSE motor driver parameters
 
-#define THROTTLE_REVERSE_PIN            36
+#define THROTTLE_REVERSE_PIN            13
 #define REVERSE_DIRECTION_SWITCH        11 
-#define THROTTLE_MIN_PWM_REVERSE        0
-#define THROTTLE_MAX_PWM_REVERSE        150
-#define THROTTLE_MIN_READINGS_REVERSE   1000
-#define THROTTLE_MAX_READINGS_REVERSE   283
+#define THROTTLE_MIN_PWM_REVERSE       -150
+#define THROTTLE_MAX_PWM_REVERSE        0
+#define THROTTLE_MIN_READINGS_REVERSE  -100
+#define THROTTLE_MAX_READINGS_REVERSE   0
 
 // HIGH Break PINS
 #define HIGH_BREAK_PIN           37
@@ -75,6 +75,7 @@ void Curtis_Break(int Break_Pin , int State);
 int  Curtis_Speedometer(int Sedometer_Pin , int Mode);
 void Curtis_Key_Switch (int Key_Pin , int Key_State);
 void Curtis_RC (int RC_Readings, int RC_Switch, int RC_Key_Switch_Reading);
+void Curtis_Ros (int Throttle_vel);
 
 
 
