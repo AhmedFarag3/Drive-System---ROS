@@ -58,8 +58,8 @@ void setup()
 
   // begin the serial communication
   Serial.begin(9600);
-  //start serial with ROS
-  Serial.begin(115000);
+
+
 }
 
 void loop()
@@ -71,10 +71,10 @@ void loop()
   // RC_Key_Switch_Reading = channels[RC_KEY_SW_CH_NUM];
   // RC_Steering_Val = channels[STEERING_CH];
 
-  Can3.events();
-  Brake_Control(RC_Readings);
+  //Can3.events();
+  Brake_Control(Throttle_Value);
 
-  RC_Control_Steps(RC_Steering_Val);
+  // RC_Control_Steps(RC_Steering_Val);
   //Curtis_RC(Throttle_Value, RC_Switch, RC_Key_Switch_Reading);
   Curtis_Ros(Throttle_Value);
   nh.spinOnce();

@@ -7,10 +7,10 @@
 
 //Cytron
 #define Brake_Dir 32
-#define Brake_PWM 29
+#define Brake_PWM 13
 
-#define Throttle_Zero   1002
-#define Throttle_Max    1722
+#define Throttle_Zero   0
+#define Throttle_Max    100
 #define Throttle_Min    283
 
 #define RC_E_

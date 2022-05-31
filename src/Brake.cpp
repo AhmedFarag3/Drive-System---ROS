@@ -21,9 +21,9 @@ unsigned long prevMillis_brake = 0;
 void Brake_Control(int Throttle_Value)
 {
 
-    if (Throttle_Value > 1003)
+    if (Throttle_Value > 0)
     {
-        Throttle_Value = map(Throttle_Value, Throttle_Zero, Throttle_Max, 0, 100);
+        //Throttle_Value = map(Throttle_Value, Throttle_Zero, Throttle_Max, 0, 100);
         // Serial.printf("Throttle_Value: %d " , Throttle_Value);
         // Serial.printf("  previous_throttle: %d \n " , previous_throttle);
 
@@ -56,7 +56,7 @@ void Brake_Control(int Throttle_Value)
         }
     }
 
-    else if (Throttle_Value < 1000)
+    else if (Throttle_Value < -2)
     {
 
         Throttle_Value = map(Throttle_Value, Throttle_Min, Throttle_Zero, 100, 0);
@@ -90,7 +90,7 @@ void Brake_Control(int Throttle_Value)
         }
     }
 
-    else if (Throttle_Value == 1002)
+    else if (Throttle_Value == 0)
     {
         previous_throttle = 0;
         // prevMillis_brake = millis();
