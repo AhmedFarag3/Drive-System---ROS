@@ -18,7 +18,7 @@ extern FlexCAN_T4<CAN3, RX_SIZE_256, TX_SIZE_16> Can3;
 #define T_MAX   18.0f
 
 // Set values  ID1
-#define P_SteeringZero  0.0f       // Initial Zero position
+#define P_SteeringZero  0.0       // Initial Zero position
 #define P_SteeringMin   -55.0f    // Minimum position CCW
 #define P_SteeringMax   55.0f     // Max Position CW
 #define Steering_Can_ID 0x1        // to be checked
@@ -42,6 +42,7 @@ void Steering_Init();
 void Serial_Control();
 void RC_Control(int RC_Val);
 void RC_Control_Steps(int RC_Val);
+void ROS_Control_Steps(int ROS_ANGLE);
 
 
 

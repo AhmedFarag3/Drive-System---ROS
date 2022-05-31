@@ -7,15 +7,25 @@
 
 //Cytron
 #define Brake_Dir 32
-#define Brake_PWM 13
+#define Brake_PWM 29
 
-#define Throttle_Zero   0
-#define Throttle_Max    100
-#define Throttle_Min    283
+#define RC_Throttle_Zero   1002
+#define RC_Throttle_Max    1722
+#define RC_Throttle_Min    283
+
+#define ROS_Throttle_Zero   0
+#define ROS_Throttle_Max    100
+#define ROS_Throttle_Min    -100
+
 
 #define RC_E_
 void Brake_init();
-void Brake_Control(int Throttle_Value);
+// void Brake_Control(int Throttle_Value);
+void Brake_Control_ROS(int Throttle_Value);
+void Brake_Control_RC(int Throttle_Value);
+
+
+
 void Brake_Control_Serial();
 
 

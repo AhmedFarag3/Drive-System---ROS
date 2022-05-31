@@ -17,17 +17,19 @@ int Release_State = 0;
 int Brake_State = 0;
 
 unsigned long prevMillis_brake = 0;
-
-void Brake_Control(int Throttle_Value)
+int STOP_CYTRON = LOW;
+void Brake_Control_ROS(int Throttle_Value)
 {
 
     if (Throttle_Value > 0)
     {
-        //Throttle_Value = map(Throttle_Value, Throttle_Zero, Throttle_Max, 0, 100);
-        // Serial.printf("Throttle_Value: %d " , Throttle_Value);
-        // Serial.printf("  previous_throttle: %d \n " , previous_throttle);
+        STOP_CYTRON = LOW;
 
-        if ((Throttle_Value - previous_throttle > 2) && Release_State == LOW)
+        // Throttle_Value = map(Throttle_Value, Throttle_Zero, Throttle_Max, 0, 100);
+        //  Serial.printf("Throttle_Value: %d " , Throttle_Value);
+        //  Serial.printf("  previous_throttle: %d \n " , previous_throttle);
+
+        if ((Throttle_Value - previous_throttle > 1) && Release_State == LOW)
         {
             digitalWrite(Brake_Dir, LOW);
             analogWrite(Brake_PWM, 125);
@@ -41,7 +43,103 @@ void Brake_Control(int Throttle_Value)
             previous_throttle = Throttle_Value;
         }
 
-        else if ((Throttle_Value - previous_throttle < -2) && Throttle_Value < 15 && (Brake_State == LOW))
+        else if ((Throttle_Value - previous_throttle < -1) && Throttle_Value < 15 && (Brake_State == LOW))
+        {
+            digitalWrite(Brake_Dir, HIGH);
+            analogWrite(Brake_PWM, 125);
+
+            Serial.printf("Forward Braking %d  \n", Throttle_Value);
+
+            Brake_State = HIGH;
+            Release_State = LOW;
+            prevMillis_brake = millis();
+            previous_throttle = Throttle_Value;
+        }
+    }
+
+    else if (Throttle_Value < 0)
+    {
+        STOP_CYTRON = LOW;
+        Throttle_Value = abs(Throttle_Value);
+
+        // Throttle_Value = map(Throttle_Value, Throttle_Min, Throttle_Zero, 100, 0);
+        // Serial.printf("Throttle_Value: %d " , Throttle_Value);
+        // Serial.printf("  previous_throttle: %d \n " , previous_throttle);
+
+        if ((Throttle_Value - previous_throttle > 1))
+        {
+            digitalWrite(Brake_Dir, LOW);
+            analogWrite(Brake_PWM, 125);
+
+            Serial.printf("Reverse Releasing %d  \n", Throttle_Value);
+
+            Brake_State = LOW;
+            Release_State = HIGH;
+            prevMillis_brake = millis();
+            previous_throttle = Throttle_Value;
+        }
+
+        else if ((Throttle_Value - previous_throttle < -1) && Throttle_Value < 15 && (Brake_State == LOW))
+        {
+            digitalWrite(Brake_Dir, HIGH);
+            analogWrite(Brake_PWM, 125);
+
+            Serial.printf("Reverse Braking %d  \n", Throttle_Value);
+
+            Brake_State = HIGH;
+            Release_State = LOW;
+            prevMillis_brake = millis();
+            previous_throttle = Throttle_Value;
+        }
+    }
+
+    else if (Throttle_Value == 0 && (Brake_State == LOW))
+    {
+        if (!STOP_CYTRON)
+        {
+            digitalWrite(Brake_Dir, HIGH);
+            analogWrite(Brake_PWM, 125);
+        }
+        previous_throttle = 0;
+        prevMillis_brake = millis();
+        Brake_State = HIGH;
+    }
+
+    if ((millis() - prevMillis_brake > 1000) && ((Brake_State == HIGH) || Release_State == HIGH))
+    {
+        Serial.println("--------------Stop Brake--------------");
+        analogWrite(Brake_PWM, 0);
+        Brake_State = LOW;
+        Release_State = LOW;
+        STOP_CYTRON = HIGH;
+
+    }
+}
+
+void Brake_Control_RC(int Throttle_Value)
+{
+
+    if (Throttle_Value > 1003)
+    {
+        Throttle_Value = map(Throttle_Value, RC_Throttle_Zero, RC_Throttle_Max, 0, 100);
+        // Serial.printf("Throttle_Value: %d " , Throttle_Value);
+        // Serial.printf("  previous_throttle: %d \n " , previous_throttle);
+
+        if ((Throttle_Value - previous_throttle > 1) && Release_State == LOW)
+        {
+            digitalWrite(Brake_Dir, LOW);
+            analogWrite(Brake_PWM, 125);
+
+            Serial.printf("Forward  Releasing %d  \n", Throttle_Value);
+
+            Brake_State = LOW;
+            Release_State = HIGH;
+
+            prevMillis_brake = millis();
+            previous_throttle = Throttle_Value;
+        }
+
+        else if ((Throttle_Value - previous_throttle < -1) && Throttle_Value < 15 && (Brake_State == LOW))
         {
             digitalWrite(Brake_Dir, HIGH);
             analogWrite(Brake_PWM, 125);
@@ -56,14 +154,14 @@ void Brake_Control(int Throttle_Value)
         }
     }
 
-    else if (Throttle_Value < -2)
+    else if (Throttle_Value < 1000)
     {
 
-        Throttle_Value = map(Throttle_Value, Throttle_Min, Throttle_Zero, 100, 0);
+        Throttle_Value = map(Throttle_Value, RC_Throttle_Min, RC_Throttle_Zero, 100, 0);
         // Serial.printf("Throttle_Value: %d " , Throttle_Value);
         // Serial.printf("  previous_throttle: %d \n " , previous_throttle);
 
-        if ((Throttle_Value - previous_throttle > 2))
+        if ((Throttle_Value - previous_throttle > 1))
         {
             digitalWrite(Brake_Dir, LOW);
             analogWrite(Brake_PWM, 125);
@@ -76,7 +174,7 @@ void Brake_Control(int Throttle_Value)
             previous_throttle = Throttle_Value;
         }
 
-        else if ((Throttle_Value - previous_throttle < -2) && Throttle_Value < 15 && (Brake_State == LOW))
+        else if ((Throttle_Value - previous_throttle < -1) && Throttle_Value < 15 && (Brake_State == LOW))
         {
             digitalWrite(Brake_Dir, HIGH);
             analogWrite(Brake_PWM, 125);
@@ -90,7 +188,7 @@ void Brake_Control(int Throttle_Value)
         }
     }
 
-    else if (Throttle_Value == 0)
+    else if (Throttle_Value == 1002)
     {
         previous_throttle = 0;
         // prevMillis_brake = millis();

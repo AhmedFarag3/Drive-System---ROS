@@ -36,9 +36,11 @@
 #define FORWARD_DIRECTION_SWITCH    10
 #define THROTTLE_MIN_PWM            0
 #define THROTTLE_MAX_PWM            150
-#define THROTTLE_MIN_READINGS       0
-#define THROTTLE_MAX_READINGS       100
+#define ROS_THROTTLE_MIN_READINGS       0
+#define ROS_THROTTLE_MAX_READINGS       100
 
+#define RC_THROTTLE_MIN_READINGS       1002
+#define RC_THROTTLE_MAX_READINGS       1722
 
 // REVERSE motor driver parameters
 
@@ -46,9 +48,11 @@
 #define REVERSE_DIRECTION_SWITCH        11 
 #define THROTTLE_MIN_PWM_REVERSE       -150
 #define THROTTLE_MAX_PWM_REVERSE        0
-#define THROTTLE_MIN_READINGS_REVERSE  -100
-#define THROTTLE_MAX_READINGS_REVERSE   0
+#define ROS_THROTTLE_MIN_READINGS_REVERSE  -100
+#define ROS_THROTTLE_MAX_READINGS_REVERSE   0
 
+#define RC_THROTTLE_MIN_READINGS_REVERSE  283
+#define RC_THROTTLE_MAX_READINGS_REVERSE   1002
 // HIGH Brake PINS
 #define HIGH_BRAKE_PIN           37
 #define HIGH_BRAKE_OFF_STATE     LOW
@@ -63,6 +67,9 @@
 
 // Stering channel
 #define STEERING_CH     0
+
+// ROS channel
+#define ROS_CH     11
 
 
 // Functions Prototype

@@ -26,7 +26,7 @@ void Steering_Init()
     pinMode(Encoder_Pin, INPUT);
 
     enableMode(Steering_Can_ID);
-    Steer_Position_Steps(P_Steering, P_SteeringZero);
+    // Steer_Position_Steps(P_Steering, P_SteeringZero);
 
     Serial.println("Steering Initialized");
 }
@@ -75,6 +75,26 @@ void Steer_Position(float &Position, int Pos_goal)
     pack_cmd(Steering_Can_ID, Position);
 }
 
+void ROS_Control_Steps(int ROS_ANGLE)
+{
+
+    float ROS_Steps = ROS_ANGLE * 1.7; // convert from degrees to steps
+
+    if (ROS_ANGLE > (0))
+    {
+        Steer_Position_Steps(P_Steering, ROS_Steps);
+    }
+
+    else if (ROS_ANGLE < (0))
+    {
+        Steer_Position_Steps(P_Steering, ROS_Steps);
+    }
+    else if (ROS_ANGLE == 0)
+    {
+        Steer_Position_Steps(P_Steering, ROS_Steps);
+    }
+}
+
 void RC_Control(int RC_Val)
 {
 
@@ -97,14 +117,14 @@ void RC_Control(int RC_Val)
 unsigned long prevMillis = 0;
 void Steer_Position_Steps(float &Position, int Step_goal)
 {
-    Serial.print("Step_goal:");
-    Serial.println(Step_goal);
+    // Serial.print("Step_goal:");
+    // Serial.println(Step_goal);
 
-    Serial.printf("Position: %f \n", Position);
+    // Serial.printf("Position: %f \n", Position);
 
-    float steps = 1;
-    short duration = 30;
-    if (millis() - prevMillis > 30)
+    float steps = abs((Position - Step_goal) / 4);
+    unsigned short duration = 40;
+    if (millis() - prevMillis > duration)
     {
         if (Position > Step_goal)
         {
@@ -147,7 +167,7 @@ void RC_Control_Steps(int RC_Val)
     else if (RC_Val < (RC_Steer_Zero - 2))
     {
         // int SteeringRC = map(RC_Val, RC_Steer_Min, RC_Steer_Zero,P_SteeringMax , P_SteeringZero);
-        int SteeringRC = map(RC_Val, RC_Steer_Min, RC_Steer_Zero,P_SteeringMin , P_SteeringZero);
+        int SteeringRC = map(RC_Val, RC_Steer_Min, RC_Steer_Zero, P_SteeringMin, P_SteeringZero);
 
         Steer_Position_Steps(P_Steering, SteeringRC);
     }
@@ -163,7 +183,7 @@ void Serial_Control()
     float Position_step = 1.0;
     int delay_time = 100;
 
-    int Encoder_Val = Get_Pos(Encoder_Pin);
+    // int Encoder_Val = Get_Pos(Encoder_Pin);
 
     if (Serial.available())
     {
@@ -186,7 +206,7 @@ void Serial_Control()
         // Rotate ClockWise
         Serial.println("Rotate CW");
 
-        if (Encoder_Val > Min_Angle)
+        if (P_Steering < P_SteeringMax)
             P_Steering += Position_step;
         pack_cmd(Steering_Can_ID, P_Steering);
 
@@ -198,8 +218,7 @@ void Serial_Control()
     {
         // Rotate CounterClockWise
         Serial.println("Rotate CCW");
-
-        if (Encoder_Val < Max_Angle)
+        if (P_Steering > P_SteeringMin)
             P_Steering -= Position_step;
         pack_cmd(Steering_Can_ID, P_Steering);
 
