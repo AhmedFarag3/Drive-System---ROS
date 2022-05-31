@@ -121,6 +121,8 @@ void Brake_Control_RC(int Throttle_Value)
 
     if (Throttle_Value > 1003)
     {
+        STOP_CYTRON = LOW;
+
         Throttle_Value = map(Throttle_Value, RC_Throttle_Zero, RC_Throttle_Max, 0, 100);
         // Serial.printf("Throttle_Value: %d " , Throttle_Value);
         // Serial.printf("  previous_throttle: %d \n " , previous_throttle);
@@ -156,6 +158,7 @@ void Brake_Control_RC(int Throttle_Value)
 
     else if (Throttle_Value < 1000)
     {
+        STOP_CYTRON = LOW;
 
         Throttle_Value = map(Throttle_Value, RC_Throttle_Min, RC_Throttle_Zero, 100, 0);
         // Serial.printf("Throttle_Value: %d " , Throttle_Value);
@@ -188,11 +191,16 @@ void Brake_Control_RC(int Throttle_Value)
         }
     }
 
-    else if (Throttle_Value == 1002)
+    else if (Throttle_Value == 1002 && (Brake_State == LOW))
     {
+                if (!STOP_CYTRON)
+        {
+            digitalWrite(Brake_Dir, HIGH);
+            analogWrite(Brake_PWM, 125);
+        }
         previous_throttle = 0;
-        // prevMillis_brake = millis();
-        // Brake_State = HIGH;
+        prevMillis_brake = millis();
+        Brake_State = HIGH;
     }
 
     if ((millis() - prevMillis_brake > 1000) && ((Brake_State == HIGH) || Release_State == HIGH))
